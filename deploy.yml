@@ -2,7 +2,7 @@ trigger:
 - master
 
 pool:
-  name: Self-Hosted-Agent
+  name: SKi Build
 
 variables:
 - name: globalVariable
