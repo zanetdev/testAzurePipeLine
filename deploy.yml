@@ -1,0 +1,78 @@
+trigger:
+- master
+
+pool:
+  name: Self-Hosted-Agent
+
+variables:
+- name: globalVariable
+  value: "This is root level variable"
+- name: overrideGlobalVariable
+  value: "ROOT" 
+- name: overrideGlobalandStageVariable
+  value: "Global"
+
+
+stages:
+- stage:
+  displayName: "Stage 1"
+  variables:
+    stageVariable: "This is Stage 1 level variable"
+    overrideGlobalVariable: "STAGE 1"
+    overrideGlobalandStageVariable: "Stage 1"
+  jobs:
+  - job: BuildAndTest
+    variables:
+    - name: jobVariable
+      value: "This is Job level variable in Stage 1"
+    - name: sameNameVariable
+      value: "This overrides pipeline variable"
+    - name: overrideGlobalandStageVariable
+      value: "Job"
+
+    workspace:
+      clean: all
+    steps:
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your commands here
+          echo ${{ variables.sameNameVariable }}
+          echo "globalVariable :" $(globalVariable)
+          echo "stageVariable :" $(stageVariable)
+          echo "jobVariable :" $(jobVariable)
+          echo "overrideGlobalVariable in Stage :" $(overrideGlobalVariable)
+          echo "overrideGlobalandStageVariable in Job :" $(overrideGlobalandStageVariable)
+          echo "Override pipelineVariable :" $(sameNameVariable)
+
+- stage:
+  displayName: "Stage 2"
+  variables:
+    stageVariable: "This is Stage 2 level variable"
+    overrideGlobalVariable: "STAGE 2"
+    overrideGlobalandStageVariable: "Stage 2"
+  jobs:
+  - job: BuildAndTest
+    variables:
+    - name: jobVariable
+      value: "This is Job level variable in Stage 2"
+    - name: overrideGlobalandStageVariable
+      value: "Stage2 -Job"
+    workspace:
+      clean: all
+    steps:
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your commands here
+          echo ${{ variables.sameNameVariable }}
+          echo "globalVariable :" $(globalVariable)
+          echo "stageVariable :" $(stageVariable)
+          echo "jobVariable :" $(jobVariable)
+          echo "overrideGlobalVariable in Stage :" $(overrideGlobalVariable)
+          echo "overrideGlobalandStageVariable in Job :" $(overrideGlobalandStageVariable)
+          echo "Get pipelineVariable as is:" $(sameNameVariable)
